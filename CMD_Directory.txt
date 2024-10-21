@@ -1,0 +1,327 @@
+Connect server 
+
+
+$server = "163.123.182.185"
+$username = "administrator"
+$password = "J672X@YvUfVFFU@"
+$securePassword = ConvertTo-SecureString "$password" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("$username", $securePassword)
+$session = New-PSSession -ComputerName $server -Credential $credential 
+if ($session.State -eq 'Opened') {
+    Write-Host "Connection established successfully to $server."
+} else {
+    Write-Host "Failed to connect to $server."
+}
+ 
+Remove-PSSession -Session $session
+
+
+
+
+
+
+
+
+CREATE Directory:
+
+
+
+$server = "163.123.182.185"
+$username = "administrator"
+$password = "J672X@YvUfVFFU@"
+$securePassword = ConvertTo-SecureString "$password" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("$username", $securePassword)
+Invoke-Command -ComputerName $server -Credential $credential -ScriptBlock { New-Item -Path "C:\testing1" -ItemType Directory }
+
+Delete Directory:
+
+
+
+$server = "163.123.182.185"
+$username = "administrator"
+$password = "J672X@YvUfVFFU@"
+$securePassword = ConvertTo-SecureString "$password" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("$username", $securePassword)
+Invoke-Command -ComputerName $server -Credential $credential -ScriptBlock {
+    Remove-Item -Path "C:\testing1" -Recurse -Force
+}
+
+
+Move Folder:
+
+
+$server = "163.123.182.185"
+$username = "administrator"
+$password = "J672X@YvUfVFFU@"
+$securePassword = ConvertTo-SecureString "$password" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("$username", $securePassword)
+Invoke-Command -ComputerName $server -Credential $credential -ScriptBlock {
+    Move-Item -Path "C:\testing1" -Destination "C:\Users"
+}
+
+
+
+
+
+
+
+
+show folder:
+
+
+$server = "163.123.182.185"
+$username = "administrator"
+$password = "J672X@YvUfVFFU@"
+$securePassword = ConvertTo-SecureString "$password" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("$username", $securePassword)
+
+$folders = Invoke-Command -ComputerName $server -Credential $credential -ScriptBlock {
+    Get-ChildItem -Path "C:\" -Directory
+}
+
+$folders | ForEach-Object { $_.FullName }
+
+
+
+
+
+
+
+
+restart server
+
+$server = "163.123.182.185"
+$username = "administrator"
+$password = "J672X@YvUfVFFU@"
+
+ 
+$securePassword = ConvertTo-SecureString "$password" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("$username", $securePassword)
+
+try {
+    
+    Invoke-Command -ComputerName $server -Credential $credential -ScriptBlock {
+        shutdown /r /t 0
+    }
+    Write-Host "Restart command executed successfully on $server."
+} catch {
+    Write-Host "Failed to restart $server. Error: $_"
+}
+
+Restart 
+
+$server = "163.123.182.185"
+$username = "administrator"
+$password = "J672X@YvUfVFFU@"
+$securePassword = ConvertTo-SecureString "$password" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("$username", $securePassword)
+Invoke-Command -ComputerName $server -Credential $credential -ScriptBlock {
+    shutdown /r /t 0
+}
+
+
+drive information
+
+
+
+
+ 
+
+$server = "163.123.182.185"
+$username = "administrator"
+$password = "J672X@YvUfVFFU@"
+$securePassword = ConvertTo-SecureString "$password" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("$username", $securePassword)
+
+ 
+$session = New-PSSession -ComputerName $server -Credential $credential
+
+try {
+   
+    $drives = Invoke-Command -Session $session -ScriptBlock {
+        Get-PSDrive -PSProvider FileSystem | Select-Object Name, @{Name='Used(GB)'; Expression={[math]::round($_.Used/1GB, 2)}}, @{Name='Free(GB)'; Expression={[math]::round($_.Free/1GB, 2)}}, @{Name='Total(GB)'; Expression={[math]::round($_.Used/1GB + $_.Free/1GB, 2)}}
+    }
+
+    
+    $drives | Format-Table -AutoSize
+} catch {
+    Write-Error "An error occurred: $_"
+} finally {
+    
+    Remove-PSSession -Session $session
+}
+
+ 
+
+
+
+
+LOCAL TO RDP
+
+$server = "163.123.182.185"
+$username = "administrator"
+$password = "J672X@YvUfVFFU@"
+$securePassword = ConvertTo-SecureString "$password" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("$username", $securePassword)
+
+# Create a new session to the remote server
+$session = New-PSSession -ComputerName $server -Credential $credential
+
+# Define the local and remote paths
+$localPath = "C:\testing1"
+$remotePath = "C:\Users\testing1"
+ 
+Copy-Item -Path $localPath -Destination $remotePath -Recurse -ToSession $session
+Remove-PSSession -Session $session
+
+
+---------------------------------------
+RDP TO LOCAL
+
+
+
+$server = "163.123.182.185"
+$username = "administrator"
+$password = "J672X@YvUfVFFU@"
+$securePassword = ConvertTo-SecureString "$password" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("$username", $securePassword)
+$session = New-PSSession -ComputerName $server -Credential $credential 
+$remotePath = "C:\testing1"
+$localPath = "C:\testing1"
+Copy-Item -Path $remotePath -Destination $localPath -Recurse -FromSession $session
+Remove-PSSession -Session $session
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------------
+
+
+
+$originalFile = "C:\test1.js"
+$backupFile = "C:\script_backup.js"
+$tempCopyFile = "C:\test2.js"
+
+# Define server credentials
+$server = "163.123.182.185"
+$username = "administrator"
+$password = "J672X@YvUfVFFU@"
+$securePassword = ConvertTo-SecureString "$password" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential("$username", $securePassword) 
+try {
+    $session = New-PSSession -ComputerName $server -Credential $credential
+
+    Invoke-Command -Session $session -ScriptBlock {
+        param($originalFile, $backupFile, $tempCopyFile)
+
+      
+        if (Test-Path $originalFile) {
+            
+            Copy-Item $originalFile $backupFile -Force
+            Write-Host "Backup created: $backupFile"
+
+             
+            Copy-Item $originalFile $tempCopyFile -Force
+            Write-Host "Temporary copy created: $tempCopyFile"
+
+            
+            Add-Content -Path $originalFile -Value  
+            Write-Host "Updated original file: $originalFile"
+
+           
+            Copy-Item $originalFile $backupFile -Force
+            Write-Host "Backup updated: $backupFile"
+
+            
+            Add-Content -Path $tempCopyFile -Value  
+            Write-Host "Updated temporary copy: $tempCopyFile"
+        } else {
+            Write-Host "Original file does not exist."
+        }
+    } -ArgumentList $originalFile, $backupFile, $tempCopyFile
+
+} catch {
+    Write-Host "Failed to connect to remote server: $_"
+} finally {
+    if ($session) {
+        Remove-PSSession -Session $session
+    }
+}
+
+
+
+
+
+----------------------
+local  
+
+
+
+
+
+$originalFile = "C:\test1.js"
+$backupFile = "C:\script_backup.js"
+$tempCopyFile = "C:\test2.js"
+ 
+
+if (Test-Path $originalFile) {
+    Copy-Item $originalFile $backupFile -Force
+    Write-Host "Backup created: $backupFile"
+    Copy-Item $originalFile $tempCopyFile -Force
+    Write-Host "Temporary copy created: $tempCopyFile"
+    Write-Host "Updated original file: $originalFile"
+    Copy-Item $originalFile $backupFile -Force
+    Write-Host "Backup updated: $backupFile"
+    
+    Write-Host "Updated temporary copy: $tempCopyFile"
+} else {
+    Write-Host "Original file does not exist."
+}
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
